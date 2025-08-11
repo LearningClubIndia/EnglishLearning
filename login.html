@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Login – English Voice Club</title>
+    <style>
+      body {
+        font-family: system-ui;
+        margin: 2rem;
+        max-width: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Create account or Login</h2>
+    <form id="f">
+      <input id="email" type="email" placeholder="Email" required /><br /><br />
+      <input
+        id="pw"
+        type="password"
+        placeholder="Password"
+        required
+      /><br /><br />
+      <select id="cat">
+        <option>Under 8</option>
+        <option>8-13</option>
+        <option>13-17</option>
+        <option>18+</option></select
+      ><br /><br />
+      <button type="submit">Go</button>
+    </form>
+
+    <!-- Firebase scripts -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+      } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
+      import {
+        getFirestore,
+        doc,
+        setDoc,
+      } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
+
+      const firebaseConfig = {
+        apiKey: 'AIzaSyCBG65IYMUSjzGqQPhysMcZjTNIw3h-5B4',
+        authDomain: 'englishlearningclubindia.firebaseapp.com',
+        projectId: 'englishlearningclubindia',
+        storageBucket: 'englishlearningclubindia.firebasestorage.app',
+        messagingSenderId: '252611300228',
+        appId: '1:252611300228:web:62ae9614f1e62e075f2bd1',
+        measurementId: 'G-57G30Y3GSP',
+      };
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      document.getElementById('f').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = f.email.value;
+        const pw = f.pw.value;
+        const cat = f.cat.value;
+        try {
+          let cred;
+          try {
+            cred = await signInWithEmailAndPassword(auth, email, pw);
+          } catch {
+            cred = await createUserWithEmailAndPassword(auth, email, pw);
+          }
+          await setDoc(doc(db, 'users', cred.user.uid), { category: cat });
+          location.href = 'dashboard.html';
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+    </script>
+  </body>
+</html>
