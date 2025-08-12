@@ -1,27 +1,88 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Dashboard – English Voice Club</title>
-    <style>
-      body {
-        font-family: system-ui;
-        margin: 2rem;
-        max-width: 600px;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>🎯 Topic of the Week</h2>
-    <p id="topic">Loading…</p>
-    <button onclick="send()">📲 Send voice note on WhatsApp</button>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard – English Voice Club</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    header{text-align:center;padding:3rem 1rem}
+    header h1{font-size:2.25rem;margin-bottom:.5rem}
+    main{flex:1;display:grid;place-items:center;padding:0 1rem 3rem}
+    .topic-card{max-width:28rem;text-align:center}
+    .topic-card p{margin:1rem 0 2rem;font-size:1.125rem}
+    .btn-primary{font-size:1.125rem;padding:1rem 2rem}
+  </style>
+</head>
 
-    <script>
-      function send() {
-        const num = '919876543210'; // <-- replace with YOUR WhatsApp Business number
-        const text = encodeURIComponent('Week topic voice note');
-        window.open('https://wa.me/' + num + '?text=' + text);
+<body>
+  <!-- Decorative layers -->
+  <div style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;background:var(--bg-light)"></div>
+  <div style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'.03\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'4\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"></div>
+
+  <header>
+    <h1>🎯 Your Challenge</h1>
+  </header>
+
+  <main>
+    <section class="card topic-card">
+      <h2 id="topicTitle">Loading topic…</h2>
+      <p id="topicDesc"></p>
+      <button id="sendBtn" class="btn-primary">📱 Send Voice Note on WhatsApp</button>
+      <p class="tiny">After recording, attach your voice note and press send.</p>
+    </section>
+  </main>
+
+  <footer style="text-align:center;padding:1rem;color:var(--muted);font-size:.875rem">
+    © 2025 English Voice Club
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
+    import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
+    const firebaseConfig = {  apiKey: "AIzaSyCBG65IYMUSjzGqQPhysMcZjTNIw3h-5B4",
+  authDomain: "englishlearningclubindia.firebaseapp.com",
+  projectId: "englishlearningclubindia",
+  storageBucket: "englishlearningclubindia.firebasestorage.app",
+  messagingSenderId: "252611300228",
+  appId: "1:252611300228:web:62ae9614f1e62e075f2bd1",
+  measurementId: "G-57G30Y3GSP"};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const topicTitle = document.getElementById('topicTitle');
+    const topicDesc  = document.getElementById('topicDesc');
+    const sendBtn    = document.getElementById('sendBtn');
+
+    // Fetch weekly topic
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, 'config', 'topic'));
+        if (snap.exists()) {
+          const t = snap.data();
+          topicTitle.textContent = t.title || 'Topic coming soon';
+          topicDesc.textContent  = t.desc  || '';
+        }
+      } catch {
+        topicTitle.textContent = 'Offline';
+        topicDesc.textContent  = 'Please check your connection.';
       }
-    </script>
-  </body>
+    })();
+
+    // WhatsApp deep link
+    const WHATSAPP_NUM = '919876543210'; // <-- your number
+    sendBtn.addEventListener('click', () => {
+      const text = encodeURIComponent('Week topic voice note');
+      window.open(`https://wa.me/${WHATSAPP_NUM}?text=${text}`, '_blank');
+    });
+
+    // Auth guard
+    onAuthStateChanged(auth, user => {
+      if (!user) location.href = 'login.html';
+    });
+  </script>
+</body>
 </html>

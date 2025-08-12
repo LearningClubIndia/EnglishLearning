@@ -1,28 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>English Voice Club – India</title>
-    <style>
-      body {
-        font-family: system-ui;
-        margin: 2rem;
-        max-width: 600px;
-      }
-      button {
-        padding: 0.6rem 1.2rem;
-        background: #0077ff;
-        color: #fff;
-        border: 0;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
+<head>
+  <meta charset="utf-8">
+  <title>Weekly Winners – English Voice Club</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Listen to the winning voice recordings across four age groups.">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    header{text-align:center;padding:3rem 1rem}
+    header h1{font-size:2.25rem;margin-bottom:.5rem}
+    .tagline{font-size:1.125rem;color:var(--muted)}
+    main{flex:1;padding:0 1rem 3rem;display:grid;gap:2rem;max-width:var(--max-width);margin:auto}
+    .winner-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem}
+    .winner-card{padding:1.5rem}
+    .winner-card h3{font-size:1.125rem;margin-bottom:.25rem}
+    .winner-card .name{font-size:1rem;color:var(--muted)}
+    audio{margin-top:.75rem}
+  </style>
+</head>
+
+<body>
+  <!-- Decorative layers -->
+  <div style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;background:var(--bg-light)"></div>
+  <div style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23fff\' fill-opacity=\'.03\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'4\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"></div>
+
+  <header>
     <h1>🏆 Weekly Winners</h1>
-    <p>Coming soon…</p>
-    <hr />
-    <a href="login.html"><button>Join / Login</button></a>
-  </body>
+    <p class="tagline">India’s favourite English-speaking challenge</p>
+    <a href="login.html" class="btn-primary" style="margin-top:1rem">Join / Login</a>
+  </header>
+
+  <main>
+    <div id="winners">
+      <div class="spinner" aria-label="Loading…"></div>
+    </div>
+  </main>
+
+  <footer style="text-align:center;padding:1rem;color:var(--muted);font-size:.875rem">
+    © 2025 English Voice Club
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
+    import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
+    const firebaseConfig = {  apiKey: "AIzaSyCBG65IYMUSjzGqQPhysMcZjTNIw3h-5B4",
+  authDomain: "englishlearningclubindia.firebaseapp.com",
+  projectId: "englishlearningclubindia",
+  storageBucket: "englishlearningclubindia.firebasestorage.app",
+  messagingSenderId: "252611300228",
+  appId: "1:252611300228:web:62ae9614f1e62e075f2bd1",
+  measurementId: "G-57G30Y3GSP"};
+    initializeApp(firebaseConfig);
+    const db = getFirestore();
+
+    const winnersEl = document.getElementById('winners');
+    const spinner   = document.querySelector('.spinner');
+
+    (async () => {
+      try {
+        const snap = await getDocs(collection(db, 'winners'));
+        spinner.remove();
+        if (snap.empty) {
+          winnersEl.innerHTML = '<p class="card">No champions yet — check back Sunday night!</p>';
+          return;
+        }
+        const grid = document.createElement('div');
+        grid.className = 'winner-grid';
+        snap.forEach(doc => {
+          const w = doc.data();
+          grid.insertAdjacentHTML('beforeend', `
+            <section class="card winner-card">
+              <h3>${w.category}</h3>
+              <p class="name">${w.name}</p>
+              <audio controls preload="none">
+                <source src="${w.audioURL}" type="audio/mpeg">
+                Your browser does not support audio.
+              </audio>
+            </section>
+          `);
+        });
+        winnersEl.appendChild(grid);
+      } catch (e) {
+        spinner.remove();
+        winnersEl.innerHTML = `<p class="error card">Could not load winners: ${e.message}</p>`;
+      }
+    })();
+  </script>
+</body>
 </html>
