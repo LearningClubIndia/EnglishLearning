@@ -5,125 +5,307 @@
   <title>Welcome – English Voice Club</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <link rel="stylesheet" href="login.css">
+
+  <!-- ✅ Only your existing styles.css -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- 🌗 Inline dark/light toggle (does NOT touch styles.css) -->
+  <style>
+    :root {
+      --c-bg: white;
+      --c-text: black;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c-bg: #1e1e1e;
+        --c-text: #f0f0f0;
+      }
+    }
+    html.dark {
+      --c-bg: #1e1e1e;
+      --c-text: #f0f0f0;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--c-bg);
+      color: var(--c-text);
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem;
+      border: 1px solid #aaa;
+      border-radius: 0.2rem;
+      background-color: var(--c-bg);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .logo svg {
+      width: 48px;
+      height: 48px;
+      color: var(--c-text);
+    }
+
+    .subline {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #aaa;
+      border-radius: 0.2rem;
+      font: inherit;
+      background-color: var(--c-bg);
+      color: var(--c-text);
+    }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #aaa;
+      border-radius: 0.2rem;
+      background-color: #eee;
+      color: var(--c-text);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .btn-primary[aria-busy="true"] {
+      cursor: wait;
+      opacity: 0.6;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: #555;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+
+    .banner-error {
+      color: #b71c1c;
+      margin-top: 1rem;
+    }
+
+    .toggle-row {
+      text-align: center;
+      margin: 0.5rem 0;
+    }
+
+    /* Theme toggle (top-right) */
+    .theme-toggle {
+      position: fixed;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #eee;
+      border: 1px solid #aaa;
+      border-radius: 0.2rem;
+      padding: 0.25rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- Background decorative layers -->
-  <div class="bg-layer layer-1"></div>
-  <div class="bg-layer layer-2"></div>
-
-  <!-- Card -->
-  <main class="card">
-    <div class="logo">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
-        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-        <path d="M9 9h.01M15 9h.01"/>
-      </svg>
-      <h1>English Voice Club</h1>
-    </div>
-
-    <p class="subline">Join the weekly speaking challenge</p>
-
-    <form id="authForm" novalidate>
-      <label>
-        <span class="label">Email</span>
-        <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
-      </label>
-
-      <label>
-        <span class="label">Password</span>
-        <input type="password" id="pw" placeholder="••••••••" minlength="6" required autocomplete="current-password">
-      </label>
-
-      <label>
-        <span class="label">Age group</span>
-        <select id="cat" required>
-          <option value="" disabled selected>Select category</option>
-          <option value="under8">Under 8</option>
-          <option value="8-13">8 – 13</option>
-          <option value="13-17">13 – 17</option>
-          <option value="18plus">18+</option>
-        </select>
-      </label>
-
-      <button type="submit" class="btn-primary">
-        <span class="btn-text">Create account / Login</span>
-        <span class="spinner"></span>
-      </button>
-
-      <p id="error" role="alert" hidden></p>
-    </form>
-
-    <footer>
-      <small>© 2025 English Voice Club</small>
-    </footer>
-  </main>
-
-  <!-- Theme toggler -->
-  <button id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme">
-    <svg class="sun" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+  <!-- Theme toggle -->
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light mode">
+    <svg class="sun" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 6.34L4.93 4.93m12.73 12.73l1.41 1.41"/>
     </svg>
-    <svg class="moon" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+    <svg class="moon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
       <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
     </svg>
   </button>
 
-  <!-- Firebase logic (unchanged) -->
+  <div class="wrapper">
+    <main class="card">
+      <header class="logo">
+        <svg aria-hidden="true" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+          <circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/>
+        </svg>
+        <h1>English Voice Club</h1>
+      </header>
+
+      <p id="subline" class="subline">Join the weekly speaking challenge</p>
+
+      <form id="authForm" novalidate>
+        <label>
+          Email
+          <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+        </label>
+
+        <label>
+          Password
+          <input type="password" id="pw" placeholder="••••••••" minlength="6" required autocomplete="current-password">
+        </label>
+
+        <button type="button" id="forgotPwBtn" class="link-btn" hidden>Forgot password?</button>
+
+        <label id="ageLabel">
+          Age group
+          <select id="cat" required>
+            <option value="" disabled selected>Select category</option>
+            <option value="under8">Under 8</option>
+            <option value="8-13">8 – 13</option>
+            <option value="13-17">13 – 17</option>
+            <option value="18plus">18+</option>
+          </select>
+        </label>
+
+        <!-- 🆕 Toggle link -->
+        <div class="toggle-row">
+          <span id="toggleText">Need an account?</span>
+          <button type="button" id="toggleBtn" class="link-btn">Sign up</button>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-primary" aria-busy="false">
+          <span id="btnText">Log in</span>
+        </button>
+
+        <p id="errorBanner" class="banner-error" role="alert" hidden></p>
+      </form>
+
+      <footer style="text-align:center;margin-top:1rem;font-size:.875rem;color:#555">
+        © 2025 English Voice Club
+      </footer>
+    </main>
+  </div>
+
+  <!-- Firebase ESM -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      sendPasswordResetEmail
+    } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
     import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
-    const firebaseConfig = {  apiKey: "AIzaSyCBG65IYMUSjzGqQPhysMcZjTNIw3h-5B4",
-  authDomain: "englishlearningclubindia.firebaseapp.com",
-  projectId: "englishlearningclubindia",
-  storageBucket: "englishlearningclubindia.firebasestorage.app",
-  messagingSenderId: "252611300228",
-  appId: "1:252611300228:web:62ae9614f1e62e075f2bd1",
-  measurementId: "G-57G30Y3GSP"};
-    const app = initializeApp(firebaseConfig);
+
+    const app = initializeApp({
+      apiKey: "AIzaSyCBG65IYMUSjzGqQPhysMcZjTNIw3h-5B4",
+      authDomain: "englishlearningclubindia.firebaseapp.com",
+      projectId: "englishlearningclubindia",
+      storageBucket: "englishlearningclubindia.firebasestorage.app",
+      messagingSenderId: "252611300228",
+      appId: "1:252611300228:web:62ae9614f1e62e075f2bd1"
+    });
     const auth = getAuth(app);
-    const db = getFirestore(app);
+    const db   = getFirestore(app);
 
-    const form = document.getElementById('authForm');
-    const errorBox = document.getElementById('error');
-    const btnText = document.querySelector('.btn-text');
-    const spinner = document.querySelector('.spinner');
+    const els = {
+      form: document.getElementById('authForm'),
+      email: document.getElementById('email'),
+      pw: document.getElementById('pw'),
+      cat: document.getElementById('cat'),
+      btnText: document.getElementById('btnText'),
+      subline: document.getElementById('subline'),
+      ageLabel: document.getElementById('ageLabel'),
+      forgotBtn: document.getElementById('forgotPwBtn'),
+      banner: document.getElementById('errorBanner'),
+      submitBtn: document.getElementById('submitBtn'),
+      toggleBtn: document.getElementById('toggleBtn'),
+      toggleText: document.getElementById('toggleText')
+    };
 
-    form.addEventListener('submit', async e => {
+    let mode = 'login'; // default
+
+    function renderMode() {
+      const isLogin = mode === 'login';
+      els.btnText.textContent   = isLogin ? 'Log in' : 'Create account';
+      els.subline.textContent   = isLogin ? 'Welcome back!' : 'Join the weekly speaking challenge';
+      els.ageLabel.hidden       = isLogin;
+      els.forgotBtn.hidden      = !isLogin;
+      els.toggleText.textContent= isLogin ? 'Need an account?' : 'Already have an account?';
+      els.toggleBtn.textContent = isLogin ? 'Sign up' : 'Log in';
+    }
+
+    els.toggleBtn.addEventListener('click', () => {
+      mode = mode === 'login' ? 'register' : 'login';
+      renderMode();
+    });
+
+    els.form.addEventListener('submit', async e => {
       e.preventDefault();
-      errorBox.hidden = true;
-      btnText.style.opacity = '0';
-      spinner.style.opacity = '1';
+      if (els.submitBtn.disabled) return;
+      els.submitBtn.disabled = true;
+      els.submitBtn.setAttribute('aria-busy', 'true');
+      els.banner.hidden = true;
 
-      const { email, pw, cat } = form.elements;
+      const email = els.email.value;
+      const pass  = els.pw.value;
+
       try {
-        let cred;
-        try { cred = await signInWithEmailAndPassword(auth, email.value, pw.value); }
-        catch { cred = await createUserWithEmailAndPassword(auth, email.value, pw.value); }
-        await setDoc(doc(db, 'users', cred.user.uid), { category: cat.value });
+        if (mode === 'login') {
+          await signInWithEmailAndPassword(auth, email, pass);
+        } else {
+          if (!els.cat.value) throw new Error('Please pick your age group.');
+          const cred = await createUserWithEmailAndPassword(auth, email, pass);
+          await setDoc(doc(db, 'users', cred.user.uid), {category: els.cat.value});
+        }
         location.href = 'dashboard.html';
       } catch (err) {
-        btnText.style.opacity = '1';
-        spinner.style.opacity = '0';
-        errorBox.textContent = err.message;
-        errorBox.hidden = false;
+        els.banner.textContent = err.message;
+        els.banner.hidden = false;
+      } finally {
+        els.submitBtn.disabled = false;
+        els.submitBtn.setAttribute('aria-busy', 'false');
       }
     });
-  </script>
 
-  <!-- Theme toggle -->
-  <script>
-    const btn = document.getElementById('themeToggle');
+    els.forgotBtn.addEventListener('click', async () => {
+      const email = els.email.value.trim();
+      if (!email) return alert('Enter your email first.');
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert('Reset link sent – check your inbox!');
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    // Dark/light toggle
     const html = document.documentElement;
     const stored = localStorage.getItem('theme');
     if (stored) html.classList.toggle('dark', stored === 'dark');
-    btn.onclick = () => {
+    document.getElementById('themeToggle').onclick = () => {
       const isDark = html.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
     };
+
+    // initial paint
+    renderMode();
   </script>
 </body>
 </html>
