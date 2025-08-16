@@ -1,3 +1,3 @@
-git add Gemfile
-git commit -m "add Gemfile for Jekyll build"
-git push
+source "https://rubygems.org"
+gem "jekyll", "~> 4.3"
+gem "minima"
