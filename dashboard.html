@@ -40,7 +40,7 @@
   </footer>
 
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
+    import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
     import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
     import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js';
 
@@ -54,48 +54,48 @@
       measurementId: "G-57G30Y3GSP"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
     const auth = getAuth(app);
 
     const topicTitle = document.getElementById('topicTitle');
     const topicDesc  = document.getElementById('topicDesc');
     const sendBtn    = document.getElementById('sendBtn');
 
-    // Fetch weekly topic
-    (async () => {
-      try {
-        const snap = await getDoc(doc(db, 'config', 'topic'));
-        if (snap.exists()) {
-          const t = snap.data();
-          topicTitle.textContent = t.title || 'Topic coming soon';
-          topicDesc.textContent  = t.desc  || '';
-        }
-      } catch {
-        topicTitle.textContent = 'Offline';
-        topicDesc.textContent  = 'Please check your connection.';
-      }
-    })();
+    // Map age group → tailored topic
+    const topics = {
+      under8:  { title: 'My Favourite Toy',     desc: 'Show us your favourite toy and tell us why you love it in 1–2 minutes.' },
+      '8-13':  { title: 'A Day in My Life',     desc: 'Take us through a normal day at school or at home.' },
+      '13-17': { title: 'A New Skill I Learnt', desc: 'Pick one skill you learnt recently and explain how you did it.' },
+      '18plus':{ title: 'The Future of Work',   desc: 'Describe how you think your dream job will change in 10 years.' }
+    };
 
-    // WhatsApp deep link
-    const WHATSAPP_NUM = '919876543210';
-    sendBtn.addEventListener('click', () => {
-      const text = encodeURIComponent('Week topic video');
-      window.open(`https://wa.me/${WHATSAPP_NUM}?text=${text}`, '_blank');
+    let userCategory = null;
+
+    // Auth guard & fetch user category
+    onAuthStateChanged(auth, async user => {
+      if (!user) return (location.href = 'login.html');
+
+      document.getElementById('greeting').textContent = `Hi, ${user.displayName || user.email}!`;
+
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        userCategory  = userDoc.exists() ? userDoc.data().category : '18plus';
+      } catch {
+        userCategory = '18plus'; // offline fallback
+      }
+
+      const t = topics[userCategory] || topics['18plus'];
+      topicTitle.textContent = t.title;
+      topicDesc.textContent  = t.desc;
     });
 
-    // Auth guard + greeting
-    onAuthStateChanged(auth, user => {
-      if (!user) {
-        location.href = 'login.html';
-      } else {
-        const greeting = document.getElementById('greeting');
-        greeting.textContent = `Hi!, ${user.displayName || user.email}!`;
-      }
+    // WhatsApp deep link
+    const WHATSAPP_NUM = '12242450212';
+    sendBtn.addEventListener('click', () => {
+      const text = encodeURIComponent(`Week topic video – ${topicTitle.textContent}`);
+      window.open(`https://wa.me/${WHATSAPP_NUM}?text=${text}`, '_blank');
     });
   </script>
 </body>
-
 </html>
-
-
