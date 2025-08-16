@@ -23,6 +23,7 @@
 
   <header>
     <h1>🎥 Your Challenge</h1>
+    <p id="greeting" style="margin:.25rem 0 1.5rem;font-size:1.125rem;font-weight:600">Hi there!</p>
   </header>
 
   <main>
@@ -83,9 +84,14 @@
       window.open(`https://wa.me/${WHATSAPP_NUM}?text=${text}`, '_blank');
     });
 
-    // Auth guard
+    // Auth guard + greeting
     onAuthStateChanged(auth, user => {
-      if (!user) location.href = 'login.html';
+      if (!user) {
+        location.href = 'login.html';
+      } else {
+        const greeting = document.getElementById('greeting');
+        greeting.textContent = `Hi, ${user.displayName || user.email}!`;
+      }
     });
   </script>
 </body>
